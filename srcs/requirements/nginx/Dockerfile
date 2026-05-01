@@ -14,8 +14,7 @@ RUN openssl req -x509 -nodes -days 365 \
 
 COPY conf/nginx.conf /etc/nginx/conf.d/default.conf
 
-RUN mkdir -p /var/www/html && \
-    echo "<h1>welcome to nginx</h1>" > /var/www/html/index.html
+RUN mkdir -p /var/www/html
 
 EXPOSE 443
 
