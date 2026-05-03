@@ -4,9 +4,10 @@ services:
     ports:
       - "443:443"
     depends_on:
-      - wordpress
+      wordpress:
+        condition: service_started
     volumes:
-      - wp:/var/www/html
+      - db:/var/lib/mysql
     networks:
       - inception
     restart: always
@@ -26,7 +27,7 @@ services:
     build: ./requirements/mariadb
     env_file: .env
     volumes:
-      - db:/var/lib/mysql
+      - wp:/var/www/html
     networks:
       - inception
     restart: always
