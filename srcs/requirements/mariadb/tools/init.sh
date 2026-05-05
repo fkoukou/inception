@@ -2,29 +2,21 @@
 
 set -e
 
-echo "[mariadb] starting initialization..."
+echo "[mariadb] starting..."
 
-# initialize database ONLY if not already initialized
-if [ ! -d "/var/lib/mysql/mysql" ]; then
-    echo "[mariadb] first time setup..."
+mysqld_safe --datadir=/var/lib/mysql &
+sleep 5
 
-    mysql_install_db --user=mysql --datadir=/var/lib/mysql
+until mysqladmin ping -h 127.0.0.1 --silent; do
+    echo "Waiting for MariaDB..."
+    sleep 1
+done
 
-    service mariadb start
+mysql -u root << EOF
+CREATE DATABASE IF NOT EXISTS ${DB_NAME};
+CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
+GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';
+FLUSH PRIVILEGES;
+EOF
 
-    until mysqladmin ping -h localhost --silent; do
-        echo "Waiting for MariaDB..."
-        sleep 1
-    done
-
-    mysql -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;"
-    mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';"
-    mysql -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'%';"
-    mysql -e "FLUSH PRIVILEGES;"
-
-    service mariadb stop
-fi
-
-echo "[mariadb] launching safe mode..."
-
-exec mysqld_safe
+wait
