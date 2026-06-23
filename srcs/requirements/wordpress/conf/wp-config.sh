@@ -36,7 +36,6 @@ if [ ! -f wp-config.php ]; then
         --allow-root
 fi
 
-# 🔥 FIX ICI
 mkdir -p /run/php
 chown -R www-data:www-data /run/php
 
