@@ -7,7 +7,7 @@ echo "[mariadb] starting..."
 mysqld_safe --datadir=/var/lib/mysql &
 MYSQL_PID=$!
 
-# wait DB ready
+
 until mysqladmin ping -h 127.0.0.1 --silent; do
     echo "Waiting for MariaDB..."
     sleep 1
