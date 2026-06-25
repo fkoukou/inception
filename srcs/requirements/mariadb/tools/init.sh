@@ -15,7 +15,7 @@ done
 
 echo "[mariadb] creating db..."
 
-mysql -u root << EOF
+mysql -u root -p"${DB_ROOT_PASSWORD}"<< EOF
 CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;
 CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
 GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'%';
@@ -23,5 +23,7 @@ FLUSH PRIVILEGES;
 EOF
 
 echo "[mariadb] ready"
-
+mysqladmin -u root -p"${DB_ROOT_PASSWORD}" shutdown
 wait $MYSQL_PID
+
+exec mariadbd --user=mysql
