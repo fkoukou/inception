@@ -6,7 +6,7 @@ services:
     depends_on:
       - wordpress
     volumes:
-      - /home/fakoukou/data/wordpress:/var/www/html
+      - wordpress_data:/var/www/html
     networks:
       - inception
     restart: always
@@ -14,10 +14,10 @@ services:
   wordpress:
     build: ./requirements/wordpress
     env_file: .env
-    volumes:
-      - /home/fakoukou/data/wordpress:/var/www/html
     depends_on:
       - mariadb
+    volumes:
+      - wordpress_data:/var/www/html
     networks:
       - inception
     restart: always
@@ -26,10 +26,26 @@ services:
     build: ./requirements/mariadb
     env_file: .env
     volumes:
-      - /home/fakoukou/data/mariadb:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
     networks:
       - inception
     restart: always
 
+volumes:
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/fakoukou/data/wordpress
+
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/fakoukou/data/mariadb
+
 networks:
   inception:
+    driver: bridge

@@ -2,6 +2,12 @@
 
 set -e
 
+
+
+
+RUN sed -i 's|listen = /run/php/php.*-fpm.sock|listen = 9000|' \
+    /etc/php/7.4/fpm/pool.d/www.conf
+
 cd /var/www/html
 
 echo "[wordpress] waiting for mariadb..."

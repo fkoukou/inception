@@ -1,18 +1,16 @@
 FROM debian:bullseye
 
-RUN apt update && apt install -y nginx openssl && \
-    apt clean && rm -rf /var/lib/apt/lists/*
-
-RUN mkdir -p /etc/nginx/ssl
-
-RUN openssl req -x509 -nodes -days 365 \
-    -newkey rsa:2048 \
-    -keyout /etc/nginx/ssl/nginx.key \
-    -out /etc/nginx/ssl/nginx.crt \
-    -subj "/C=MA/ST=Benguerir/L=Benguerir/O=42/OU=1337/CN=fakoukou.42.fr"
+RUN apt update && \
+    apt install -y nginx openssl && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY conf/nginx.conf /etc/nginx/conf.d/default.conf
+COPY tools/initt.sh /
+
+RUN chmod +x /initt.sh
 
 EXPOSE 443
 
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/initt.sh"]
+
