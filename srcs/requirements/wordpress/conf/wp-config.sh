@@ -1,23 +1,25 @@
 #!/bin/bash
-
 set -e
+mkdir  -p /var/www/html
 
-
-
-
-RUN sed -i 's|listen = /run/php/php.*-fpm.sock|listen = 9000|' \
-    /etc/php/7.4/fpm/pool.d/www.conf
+if [ ! -f /usr/local/bin/wp ]; then
+    curl -o /usr/local/bin/wp \
+    https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+    chmod +x /usr/local/bin/wp
+fi
+# hna kandiroh bach nbedlo listen ta3 php-fpm 
+sed -i 's|listen = /run/php/php.*-fpm.sock|listen = 9000|' \
+/etc/php/7.4/fpm/pool.d/www.conf
 
 cd /var/www/html
 
 echo "[wordpress] waiting for mariadb..."
 
-until mysql -h mariadb -u "$DB_USER" -p"$DB_PASSWORD" -e "SELECT 1" 2>/dev/null; do
+until mysqladmin ping -h mariadb -u "$DB_USER" -p"$DB_PASSWORD" --silent; do
     sleep 2
 done
 
 if [ ! -f wp-config.php ]; then
-
     wp core download --allow-root
 
     wp config create \
@@ -43,6 +45,5 @@ if [ ! -f wp-config.php ]; then
 fi
 
 mkdir -p /run/php
-chown -R www-data:www-data /run/php
 
 exec php-fpm7.4 -F
