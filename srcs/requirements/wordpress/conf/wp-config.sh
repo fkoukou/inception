@@ -20,6 +20,7 @@ until mysqladmin ping -h mariadb -u "$DB_USER" -p"$DB_PASSWORD" --silent; do
 done
 
 if [ ! -f wp-config.php ]; then
+
     wp core download --allow-root
 
     wp config create \
